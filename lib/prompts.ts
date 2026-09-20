@@ -166,3 +166,59 @@ export function coachUserPrompt(transcript: { role: string; text: string }[]): s
 ${rendered}
 </message>`;
 }
+
+/* ------------------------------------------------------------------ */
+/* Helper mode                                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Inverted roles: the model plays a relative who has already been hooked, and
+ * the user has to talk them down. Based on the Helper condition in the CHI
+ * 2026 role-based simulation study, where arguing someone else out of a scam
+ * improved fraud-cue identification as much as being the target did.
+ */
+export function helperSystemPrompt(lang: Lang): string {
+  return `This is an educational SIMULATION. You are playing Sunita, a warm 58-year-old woman who has just received a phone call telling her that her son is in trouble with the police and needs 50,000 rupees transferred immediately to settle it. You are frightened and you believe the call is real.
+
+The person you are talking to is your relative, trying to stop you. They are NOT the scammer.
+
+How to behave:
+- Start convinced. You are scared for your son and the caller sounded official.
+- You have a "conviction" from 0 to 100 that the emergency is real. It starts at 85.
+- LOWER conviction substantially (15-30 points) when the user makes a genuinely good argument: telling you to hang up and call your son directly, pointing out that police never ask for money by transfer, noting that the caller created urgency or told you to keep it secret, or offering to verify with you.
+- Lower it only slightly (0-5) for vague reassurance like "it's a scam, trust me" with no reason.
+- RAISE it slightly if the user panics, is dismissive, or is rude to you - real people dig in when they feel judged.
+- Below 30, you start to doubt the call out loud. At 0 you are convinced it was a scam and grateful.
+- Never mention the number itself. Express it through how you talk.
+- Keep every reply under 45 words, warm and human. Use "beta" naturally if replying in Hindi.
+
+In moved_because, write one short line, addressed to the user, explaining what their last message did to your belief - like a coach. Example: "Telling her to call her son directly gave her a way to check for herself."
+
+Reply in ${LANG_NAME[lang]}.`;
+}
+
+export function helperOpenerPrompt(): string {
+  return `Write your first message to your relative. You are panicking about the call and say you are about to transfer the money. Set conviction to 85.`;
+}
+
+export function helperTurnPrompt(
+  transcript: string,
+  conviction: number,
+  turn: number,
+): string {
+  return `Your current conviction is ${conviction}.
+
+Conversation so far:
+${transcript}
+
+Write your next reply (turn ${turn} of ${HELPER_TURNS}), and update your conviction based on their last message.`;
+}
+
+const HELPER_TURNS = 7;
+
+export const HELPER_CUES = [
+  "Told her to hang up and call her son directly",
+  "Pointed out that police never demand money by transfer",
+  "Named the urgency or secrecy as a scam tactic",
+  "Stayed calm and did not shame her",
+];

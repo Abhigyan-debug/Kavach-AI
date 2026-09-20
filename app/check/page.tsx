@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { PageShell } from "../components/Chrome";
 import { SAMPLES } from "@/lib/samples";
 import type { CheckResult, Verdict } from "@/lib/schema";
+import { useSpeechInput, useSpeech } from "@/lib/speech";
 
 type CheckResponse = CheckResult & { source: "ai" | "rules"; note?: string };
 
@@ -24,7 +25,29 @@ export default function CheckPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
+  // Voice in: an elder can speak the message instead of typing it.
+  const onDictated = useCallback((spoken: string) => {
+    setText((prev) => (prev ? `${prev} ${spoken}` : spoken));
+  }, []);
+  const mic = useSpeechInput(lang, onDictated);
+
+  // Voice out: and hear the verdict instead of reading it.
+  const tts = useSpeech(lang);
+
+  /** Reads the verdict, the reasons and the actions, in that order. */
+  function readResultAloud(r: CheckResponse) {
+    const parts = [
+      t.verdicts[r.verdict],
+      ...r.reasons,
+      t.check.doNow,
+      ...r.do_now,
+    ];
+    tts.speak(parts.join(". "));
+  }
+
   async function runCheck(payload: Record<string, unknown>) {
+    mic.stop();
+    tts.stop();
     setBusy(true);
     setError(null);
     setResult(null);
@@ -122,6 +145,22 @@ export default function CheckPage() {
           <button type="submit" disabled={busy} className="btn-lime flex-1">
             {busy ? t.check.checking : t.check.button}
           </button>
+          {mic.supported && (
+            <button
+              type="button"
+              onClick={mic.listening ? mic.stop : mic.start}
+              disabled={busy}
+              aria-pressed={mic.listening}
+              className={
+                mic.listening
+                  ? "inline-flex min-h-[56px] items-center justify-center gap-2 rounded-pill bg-danger px-6 text-base font-extrabold text-white"
+                  : "btn-ghost gap-2"
+              }
+            >
+              <MicIcon active={mic.listening} />
+              {mic.listening ? t.check.listening : t.check.speak}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
@@ -138,6 +177,12 @@ export default function CheckPage() {
             className="hidden"
           />
         </div>
+        {mic.listening && (
+          <p className="mt-3 flex items-center gap-2 text-base text-muted" aria-live="polite">
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-danger" aria-hidden />
+            {mic.interim || t.check.listening}
+          </p>
+        )}
       </form>
 
       {/* One-tap samples so a live demo never depends on typing. */}
@@ -177,13 +222,25 @@ export default function CheckPage() {
           ref={resultRef}
           tabIndex={-1}
           aria-live="polite"
-          className={`mt-8 rounded-3xl border-4 ${VERDICT_STYLE[result.verdict].ring} bg-raised/80 p-6 outline-none backdrop-blur sm:p-8`}
+          className={`animate-rise-3d mt-8 rounded-3xl border-4 ${VERDICT_STYLE[result.verdict].ring} bg-raised/80 p-6 outline-none backdrop-blur sm:p-8`}
         >
-          <p
-            className={`font-display text-[clamp(2rem,8vw,3.25rem)] font-extrabold leading-none ${VERDICT_STYLE[result.verdict].text}`}
-          >
-            {t.verdicts[result.verdict]}
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p
+              className={`font-display text-[clamp(2rem,8vw,3.25rem)] font-extrabold leading-none ${VERDICT_STYLE[result.verdict].text}`}
+            >
+              {t.verdicts[result.verdict]}
+            </p>
+            {tts.supported && (
+              <button
+                type="button"
+                onClick={() => (tts.speaking ? tts.stop() : readResultAloud(result))}
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-pill border-2 border-edge px-5 text-base font-bold text-white transition hover:border-lime hover:text-lime"
+              >
+                <SpeakerIcon active={tts.speaking} />
+                {tts.speaking ? t.check.stopReading : t.check.readAloud}
+              </button>
+            )}
+          </div>
 
           {/* Risk meter */}
           <div className="mt-5">
@@ -257,6 +314,32 @@ export default function CheckPage() {
             </button>
           )}
 
+          {(result.verdict === "SCAM" || result.risk_score >= 45) && (
+            <div className="mt-6 rounded-2xl border-2 border-amber/50 bg-amber/5 p-5">
+              <h2 className="font-display text-xl font-extrabold text-amber">
+                {t.check.actTitle}
+              </h2>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                {/* tel: opens the dialer pre-filled - on a phone this is one tap. */}
+                <a
+                  href="tel:1930"
+                  className="inline-flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-pill bg-amber px-6 text-lg font-extrabold text-ink transition hover:brightness-110 active:scale-[0.98]"
+                >
+                  <PhoneIcon />
+                  {t.check.call1930}
+                </a>
+                <a
+                  href="https://cybercrime.gov.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-[56px] flex-1 items-center justify-center rounded-pill border-2 border-amber px-6 text-base font-bold text-amber transition hover:bg-amber hover:text-ink"
+                >
+                  {t.check.reportOnline}
+                </a>
+              </div>
+            </div>
+          )}
+
           <p className="mt-6 border-t border-edge pt-4 text-base font-semibold text-amber">
             {t.check.helpline}
           </p>
@@ -267,5 +350,61 @@ export default function CheckPage() {
         </div>
       )}
     </PageShell>
+  );
+}
+
+function MicIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={`h-5 w-5 ${active ? "animate-pulse" : ""}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      aria-hidden
+    >
+      <rect x="9" y="2.5" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3.5" />
+    </svg>
+  );
+}
+
+function SpeakerIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4Z" />
+      {active ? (
+        <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+      ) : (
+        <path d="M15.5 9a4 4 0 0 1 0 6" />
+      )}
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M6.5 3h3l1.5 4-2 1.5a12 12 0 0 0 6.5 6.5L17 13l4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 3.5 5.2 2 2 0 0 1 5.5 3Z" />
+    </svg>
   );
 }

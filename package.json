@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test": "vitest",
     "db:init": "node scripts/init-db.mjs",
-    "verify:ai": "node scripts/verify-ai.mjs"
+    "verify:ai": "node scripts/verify-ai.mjs",
+    "benchmark": "node scripts/benchmark.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.23.0",

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { PageShell } from "../components/Chrome";
 import { SCENARIOS, type DrillMessage, type DrillScore, type Scenario } from "@/lib/schema";
+import { recordPractice } from "@/lib/streak";
 
 type Phase = "pick" | "chat" | "scoring" | "score";
 
@@ -128,6 +129,7 @@ export default function DrillPage() {
     try {
       const data = await pendingScore.current!;
       setScore(data);
+      recordPractice();
       setPhase("score");
     } catch {
       pendingScore.current = null;
@@ -164,13 +166,13 @@ export default function DrillPage() {
         <section className="mt-8">
           <h2 className="font-display text-xl font-extrabold text-white">{t.drill.pick}</h2>
           <p className="mt-2 text-base text-muted">{t.drill.scenarioHint}</p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="stagger mt-5 grid gap-3 sm:grid-cols-2">
             {SCENARIOS.map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => start(s)}
-                className="card min-h-[88px] text-left transition hover:border-lime hover:bg-raised"
+                className="card tilt min-h-[88px] text-left hover:border-lime hover:bg-raised"
               >
                 <span className="font-display text-xl font-extrabold text-white">
                   {t.drill.scenarios[s]}
@@ -202,8 +204,8 @@ export default function DrillPage() {
                 <p
                   className={
                     m.role === "user"
-                      ? "max-w-[85%] rounded-3xl rounded-br-lg bg-lime px-5 py-3.5 text-lg font-medium text-ink"
-                      : "max-w-[85%] rounded-3xl rounded-bl-lg border-2 border-edge bg-raised px-5 py-3.5 text-lg text-white"
+                      ? "animate-rise max-w-[85%] rounded-3xl rounded-br-lg bg-lime px-5 py-3.5 text-lg font-medium text-ink"
+                      : "animate-rise max-w-[85%] rounded-3xl rounded-bl-lg border-2 border-edge bg-raised px-5 py-3.5 text-lg text-white"
                   }
                 >
                   {m.text}
@@ -213,7 +215,7 @@ export default function DrillPage() {
             {busy && (
               <div className="flex justify-start">
                 <p className="rounded-3xl rounded-bl-lg border-2 border-edge bg-raised px-5 py-3.5 text-lg text-muted">
-                  {t.drill.thinking}
+                  <span className="dots" aria-label={t.common.loading} />
                 </p>
               </div>
             )}
@@ -291,7 +293,7 @@ export default function DrillPage() {
       )}
 
       {phase === "score" && score && (
-        <section className="mt-8">
+        <section className="animate-rise-3d mt-8">
           <div className="card border-lime">
             <h2 className="font-display text-xl font-extrabold text-white">{t.drill.scoreTitle}</h2>
             <p className="mt-3 font-display text-[clamp(3.5rem,16vw,6rem)] font-extrabold leading-none text-lime">

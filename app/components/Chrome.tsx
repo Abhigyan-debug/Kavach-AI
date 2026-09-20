@@ -96,6 +96,7 @@ export function Header({
         <nav className="hidden items-center gap-1 md:flex">
           <NavLink href="/check">{t.nav.check}</NavLink>
           <NavLink href="/drill">{t.nav.drill}</NavLink>
+          <NavLink href="/helper">{t.nav.helper}</NavLink>
           <NavLink href="/family">{t.nav.family}</NavLink>
         </nav>
         <LangToggle lang={lang} onToggle={onToggle} label={t.common.language} />
@@ -125,6 +126,7 @@ export function MobileNav({ t }: { t: Dict }) {
       <div className="mx-auto flex max-w-lg">
         <TabLink href="/check" label={t.nav.check} />
         <TabLink href="/drill" label={t.nav.drill} />
+        <TabLink href="/helper" label={t.nav.helper} />
         <TabLink href="/family" label={t.nav.family} />
       </div>
     </nav>

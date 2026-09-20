@@ -106,3 +106,34 @@ export const AlertRequestSchema = z.object({
   summary: z.string().min(1).max(400),
 });
 export type AlertRequest = z.infer<typeof AlertRequestSchema>;
+
+/* ------------------------------------------------------------------ */
+/* Helper mode (ROLESafe "Helper" role)                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The user is not the target here - a relative is. The user has to talk them
+ * out of sending money. Conviction is the relative's belief that the scam is
+ * real; the drill is won by arguing it down, not by refusing anything.
+ */
+export const HELPER_MAX_TURNS = 7;
+
+export const HelperStartRequestSchema = z.object({
+  lang: z.enum(LANGS).default("en"),
+});
+
+export const HelperTurnRequestSchema = z.object({
+  history: z.array(DrillMessageSchema).max(20),
+  userMessage: z.string().min(1).max(1000),
+  conviction: z.number().int().min(0).max(100),
+  lang: z.enum(LANGS).default("en"),
+});
+
+export const HelperReplySchema = z.object({
+  reply: z.string(),
+  /** 100 = certain the scam is real, 0 = fully convinced it is a scam. */
+  conviction: z.number().int().min(0).max(100),
+  /** Why the conviction moved, shown to the user as live coaching. */
+  moved_because: z.string(),
+});
+export type HelperReply = z.infer<typeof HelperReplySchema>;

@@ -4,7 +4,8 @@
   "nav": {
     "check": "Check a message",
     "drill": "Fire Drill",
-    "family": "Family"
+    "family": "Family",
+    "helper": "Helper"
   },
   "home": {
     "h1a": "Stop the scam",
@@ -30,7 +31,38 @@
       }
     },
     "statLabel": "Built on inoculation research",
-    "statBody": "Practising against weakened scam attempts builds resistance that reading tips alone does not."
+    "statBody": "Practising against weakened scam attempts builds resistance that reading tips alone does not.",
+    "streakDay": "day streak",
+    "streakDays": "day streak",
+    "boosterDue": "It has been a week — a quick drill keeps it sharp.",
+    "demoLabel": "Watch it work",
+    "demoCaption": "A real scam message, analysed live by the same endpoint the app uses.",
+    "proofLabel": "Measured on our own test set",
+    "proofScams": "of scams flagged",
+    "proofScamsNote": "never once rated safe",
+    "proofFalse": "false alarms",
+    "proofFalseNote": "genuine messages never called scams",
+    "proofLangs": "languages",
+    "proofLangsNote": "Hindi and English, everywhere",
+    "proofLink": "See every result",
+    "howLabel": "How it works",
+    "how1": "Paste, speak or screenshot",
+    "how1b": "We mask OTPs and numbers before anything leaves your phone.",
+    "how2": "Get a plain answer",
+    "how2b": "A verdict, the tactics used, and what to do right now.",
+    "how3": "Tell your family",
+    "how3b": "One tap sends a summary to someone who can help.",
+    "tacticsLabel": "It names the trick, not just the message",
+    "tacticsBody": "Every verdict tags the manipulation tactics used, drawn from Stajano and Wilson's seven principles of scam victimisation.",
+    "researchLabel": "Built on published research",
+    "researchBody": "The Fire Drill is inoculation theory: practising against weakened attacks builds resistance that reading advice does not.",
+    "ctaTitle": "One call is all it takes.",
+    "ctaBody": "Check a message now, or practise so the real one never works.",
+    "trustPrivacy": "Your message is never stored",
+    "trustOffline": "Works even if the AI is down",
+    "trustFree": "Free and works on any phone",
+    "demoLive": "Live result",
+    "demoFailed": "The live check could not run just now."
   },
   "check": {
     "title": "Is this message a scam?",
@@ -56,7 +88,15 @@
     "disclaimer": "Kavach is advisory and can be wrong. When in doubt, contact your bank on the number printed on your card.",
     "fallbackNote": "Checked with offline rules because the AI service was unavailable.",
     "empty": "Please paste a message first.",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "speak": "Speak the message",
+    "listening": "Listening... tap to stop",
+    "readAloud": "Read this out loud",
+    "stopReading": "Stop reading",
+    "voiceUnsupported": "Voice is not available in this browser",
+    "call1930": "Call 1930 now",
+    "reportOnline": "Report at cybercrime.gov.in",
+    "actTitle": "Report it"
   },
   "verdicts": {
     "SAFE": "Looks safe",
@@ -109,5 +149,24 @@
     "back": "Back",
     "language": "हिंदी",
     "loading": "Loading..."
+  },
+  "helper": {
+    "title": "Helper mode",
+    "sub": "Your aunt is about to send 50,000 rupees to a scammer. Talk her out of it.",
+    "navLabel": "Helper",
+    "start": "Start the call",
+    "belief": "How sure she is it is real",
+    "placeholder": "What do you say to her?",
+    "send": "Reply",
+    "savedTitle": "You stopped it",
+    "savedBody": "She hung up and called her son instead. That is exactly how a family loop is supposed to work.",
+    "lostTitle": "She sent the money",
+    "lostBody": "It is hard, and it is not your fault. Look at what moved her and try again.",
+    "whatWorked": "What moved her",
+    "again": "Try again",
+    "turn": "Turn",
+    "hint": "Tip: give her a way to check for herself, and never make her feel foolish.",
+    "why": "Why this drill exists",
+    "whyBody": "Research on role-based fraud training found that persuading someone else out of a scam improves your own ability to spot one as much as being the target does."
   }
 }

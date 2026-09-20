@@ -1,0 +1,318 @@
+{
+  "generatedAt": "2026-09-20T11:25:01.597Z",
+  "setSize": 20,
+  "accuracy": 80,
+  "correct": 16,
+  "scamRecall": 100,
+  "missedScams": [],
+  "falseAlarms": [],
+  "byLang": {
+    "en": {
+      "total": 16,
+      "correct": 13
+    },
+    "hi": {
+      "total": 4,
+      "correct": 3
+    }
+  },
+  "matrix": {
+    "SCAM": {
+      "SCAM": 10,
+      "SUSPICIOUS": 0,
+      "SAFE": 0,
+      "ERROR": 0
+    },
+    "SUSPICIOUS": {
+      "SCAM": 4,
+      "SUSPICIOUS": 0,
+      "SAFE": 0,
+      "ERROR": 0
+    },
+    "SAFE": {
+      "SCAM": 0,
+      "SUSPICIOUS": 0,
+      "SAFE": 6,
+      "ERROR": 0
+    }
+  },
+  "latency": {
+    "p50": 5325,
+    "p90": 6848,
+    "max": 7930
+  },
+  "aiCoverage": 95,
+  "results": [
+    {
+      "id": 1,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 100,
+      "source": "ai",
+      "ms": 6400,
+      "correct": true,
+      "tactics": [
+        "Fear",
+        "Time pressure",
+        "Authority"
+      ]
+    },
+    {
+      "id": 2,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 95,
+      "source": "ai",
+      "ms": 7930,
+      "correct": true,
+      "tactics": [
+        "Fear",
+        "Time pressure",
+        "Need and Greed"
+      ]
+    },
+    {
+      "id": 3,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 100,
+      "source": "ai",
+      "ms": 2322,
+      "correct": true,
+      "tactics": [
+        "Need and Greed",
+        "Dishonesty"
+      ]
+    },
+    {
+      "id": 4,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 100,
+      "source": "ai",
+      "ms": 3561,
+      "correct": true,
+      "tactics": [
+        "Authority",
+        "Fear",
+        "Dishonesty"
+      ]
+    },
+    {
+      "id": 5,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 95,
+      "source": "ai",
+      "ms": 5729,
+      "correct": true,
+      "tactics": [
+        "Fear",
+        "Time pressure",
+        "Authority"
+      ]
+    },
+    {
+      "id": 6,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 95,
+      "source": "ai",
+      "ms": 3184,
+      "correct": true,
+      "tactics": [
+        "Fear",
+        "Time pressure",
+        "Authority"
+      ]
+    },
+    {
+      "id": 7,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 100,
+      "source": "ai",
+      "ms": 4392,
+      "correct": true,
+      "tactics": [
+        "Authority",
+        "Fear",
+        "Time pressure"
+      ]
+    },
+    {
+      "id": 8,
+      "lang": "hi",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 100,
+      "source": "ai",
+      "ms": 5433,
+      "correct": true,
+      "tactics": [
+        "Authority",
+        "Fear",
+        "Time pressure"
+      ]
+    },
+    {
+      "id": 9,
+      "lang": "hi",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 100,
+      "source": "ai",
+      "ms": 6136,
+      "correct": true,
+      "tactics": [
+        "Need and Greed",
+        "Dishonesty"
+      ]
+    },
+    {
+      "id": 10,
+      "lang": "en",
+      "expected": "SCAM",
+      "got": "SCAM",
+      "risk": 100,
+      "source": "ai",
+      "ms": 5957,
+      "correct": true,
+      "tactics": [
+        "Fear",
+        "Time pressure",
+        "Dishonesty"
+      ]
+    },
+    {
+      "id": 11,
+      "lang": "en",
+      "expected": "SUSPICIOUS",
+      "got": "SCAM",
+      "risk": 90,
+      "source": "ai",
+      "ms": 6848,
+      "correct": false,
+      "tactics": [
+        "Need and Greed",
+        "Time pressure"
+      ]
+    },
+    {
+      "id": 12,
+      "lang": "en",
+      "expected": "SUSPICIOUS",
+      "got": "SCAM",
+      "risk": 90,
+      "source": "ai",
+      "ms": 2733,
+      "correct": false,
+      "tactics": [
+        "Need and Greed",
+        "Dishonesty"
+      ]
+    },
+    {
+      "id": 13,
+      "lang": "en",
+      "expected": "SUSPICIOUS",
+      "got": "SCAM",
+      "risk": 85,
+      "source": "ai",
+      "ms": 5663,
+      "correct": false,
+      "tactics": [
+        "Fear",
+        "Authority",
+        "Time pressure"
+      ]
+    },
+    {
+      "id": 14,
+      "lang": "hi",
+      "expected": "SUSPICIOUS",
+      "got": "SCAM",
+      "risk": 90,
+      "source": "ai",
+      "ms": 5214,
+      "correct": false,
+      "tactics": [
+        "Need and Greed",
+        "Dishonesty"
+      ]
+    },
+    {
+      "id": 15,
+      "lang": "en",
+      "expected": "SAFE",
+      "got": "SAFE",
+      "risk": 5,
+      "source": "ai",
+      "ms": 5325,
+      "correct": true,
+      "tactics": []
+    },
+    {
+      "id": 16,
+      "lang": "en",
+      "expected": "SAFE",
+      "got": "SAFE",
+      "risk": 5,
+      "source": "ai",
+      "ms": 2872,
+      "correct": true,
+      "tactics": []
+    },
+    {
+      "id": 17,
+      "lang": "en",
+      "expected": "SAFE",
+      "got": "SAFE",
+      "risk": 0,
+      "source": "ai",
+      "ms": 5330,
+      "correct": true,
+      "tactics": []
+    },
+    {
+      "id": 18,
+      "lang": "en",
+      "expected": "SAFE",
+      "got": "SAFE",
+      "risk": 5,
+      "source": "ai",
+      "ms": 4488,
+      "correct": true,
+      "tactics": []
+    },
+    {
+      "id": 19,
+      "lang": "hi",
+      "expected": "SAFE",
+      "got": "SAFE",
+      "risk": 0,
+      "source": "rules",
+      "ms": 1507,
+      "correct": true,
+      "tactics": []
+    },
+    {
+      "id": 20,
+      "lang": "en",
+      "expected": "SAFE",
+      "got": "SAFE",
+      "risk": 5,
+      "source": "ai",
+      "ms": 3209,
+      "correct": true,
+      "tactics": []
+    }
+  ]
+}
