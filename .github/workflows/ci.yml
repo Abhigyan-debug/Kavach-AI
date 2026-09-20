@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm test -- --run
+      - run: npm run build
+
+  smoke:
+    if: github.ref == 'refs/heads/main'
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for the Vercel production deploy
+        run: sleep 90
+      - name: Health check
+        run: |
+          curl --fail --retry 5 --retry-delay 10 \
+            "${{ secrets.PROD_URL }}/api/health"
+      - name: Check a known scam message end to end
+        run: |
+          curl --fail --retry 3 --retry-delay 5 \
+            -X POST "${{ secrets.PROD_URL }}/api/check" \
+            -H 'Content-Type: application/json' \
+            -d '{"text":"Your KYC has expired, account blocked in 2 hours. Share the OTP now.","lang":"en"}' \
+            | tee /tmp/check.json
+          grep -q -E '"verdict":"(SCAM|SUSPICIOUS)"' /tmp/check.json

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Kavach">
+  <title>Kavach</title>
+  <defs>
+    <!--
+      One mask paints the whole mark in a single lime pass:
+        white = lime shows through, black = knocked out.
+      The ring is the shield minus a scaled copy of itself; the crescent is a
+      disc minus an offset disc. Each shield is filled AND stroked with a
+      round linejoin, which rounds every corner uniformly without hand-fitting
+      arcs - that is what gives the soft shoulders and blunt tip.
+    -->
+    <mask id="kavach-mark">
+      <rect width="64" height="64" fill="#000" />
+
+      <!-- Outer shield -->
+      <path
+        d="M32 10 51 17.5V33c0 10-8 17.4-19 20.8C21 50.4 13 43 13 33V17.5Z"
+        fill="#fff"
+        stroke="#fff"
+        stroke-width="6.5"
+        stroke-linejoin="round"
+      />
+
+      <!-- Hollow it out, leaving a thick ring -->
+      <path
+        d="M32 10 51 17.5V33c0 10-8 17.4-19 20.8C21 50.4 13 43 13 33V17.5Z"
+        transform="translate(32 31.5) scale(.66) translate(-32 -31.5)"
+        fill="#000"
+        stroke="#000"
+        stroke-width="6.5"
+        stroke-linejoin="round"
+      />
+
+      <!-- Crescent -->
+      <circle cx="31.6" cy="32" r="9.4" fill="#fff" />
+      <circle cx="37.2" cy="26.6" r="9.2" fill="#000" />
+    </mask>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="#12082B" />
+  <rect width="64" height="64" fill="#BFFF3C" mask="url(#kavach-mark)" />
+</svg>

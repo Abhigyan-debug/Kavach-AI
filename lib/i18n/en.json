@@ -1,0 +1,113 @@
+{
+  "brand": "kavach",
+  "tagline": "Check it. Practise against it. Protect your family.",
+  "nav": {
+    "check": "Check a message",
+    "drill": "Fire Drill",
+    "family": "Family"
+  },
+  "home": {
+    "h1a": "Stop the scam",
+    "h1b": "before it",
+    "h1c": "starts",
+    "sub": "Paste any suspicious message and Kavach tells you if it is a scam, why, and what to do next. Then practise against a safe AI scammer so the real one never works.",
+    "cta": "Check a message",
+    "ctaAlt": "Try a Fire Drill",
+    "guardian": "Looking after a parent or grandparent?",
+    "guardianLink": "Open the family dashboard",
+    "pillars": {
+      "check": {
+        "title": "Check",
+        "body": "Paste a message or a screenshot. Get a plain-language verdict in seconds, not jargon."
+      },
+      "drill": {
+        "title": "Fire Drill",
+        "body": "Face a safe AI scammer for a few turns. Get coached on the cues you caught and missed."
+      },
+      "family": {
+        "title": "Family Loop",
+        "body": "One tap tells someone who cares, with a summary and a call button."
+      }
+    },
+    "statLabel": "Built on inoculation research",
+    "statBody": "Practising against weakened scam attempts builds resistance that reading tips alone does not."
+  },
+  "check": {
+    "title": "Is this message a scam?",
+    "sub": "Paste the message below. We mask phone numbers and codes before analysing it.",
+    "placeholder": "Paste the suspicious SMS, WhatsApp message or email here...",
+    "button": "Check this message",
+    "checking": "Checking...",
+    "samples": "Or try a sample:",
+    "sampleLabels": [
+      "Bank KYC scam",
+      "Parcel fee scam",
+      "Lottery win scam"
+    ],
+    "screenshot": "Upload a screenshot instead",
+    "why": "Why we think so",
+    "doNow": "Do this now",
+    "tactics": "Tactics used",
+    "alertFamily": "Alert my family",
+    "alerting": "Sending...",
+    "alerted": "Your family has been told",
+    "riskLabel": "Risk score",
+    "helpline": "For real fraud, call 1930 or report at cybercrime.gov.in",
+    "disclaimer": "Kavach is advisory and can be wrong. When in doubt, contact your bank on the number printed on your card.",
+    "fallbackNote": "Checked with offline rules because the AI service was unavailable.",
+    "empty": "Please paste a message first.",
+    "error": "Something went wrong. Please try again."
+  },
+  "verdicts": {
+    "SAFE": "Looks safe",
+    "SUSPICIOUS": "Be careful",
+    "SCAM": "This is a scam"
+  },
+  "drill": {
+    "title": "Fire Drill",
+    "sub": "Practise against a safe AI scammer. Nothing here is real, and nothing you type is stored.",
+    "pick": "Choose a scenario",
+    "simulation": "SIMULATION",
+    "scenarios": {
+      "bank_kyc": "Bank KYC call",
+      "parcel": "Parcel delivery fee",
+      "lottery": "You have won a prize",
+      "fake_official": "Police or officer call",
+      "legit_call": "A real bank call"
+    },
+    "scenarioHint": "One of these is a genuine call. Can you tell which?",
+    "placeholder": "Type your reply...",
+    "send": "Send",
+    "hangUp": "Hang up and see my score",
+    "thinking": "...",
+    "turn": "Turn",
+    "of": "of",
+    "scoring": "Scoring your drill...",
+    "scoreTitle": "Your score card",
+    "caught": "Cues you caught",
+    "missed": "Cues you missed",
+    "lesson": "Remember this",
+    "again": "Try another scenario",
+    "startOver": "Start again",
+    "safetyNote": "Never type a real OTP, card number or address, even in a drill.",
+    "breakCharacter": "Drill paused",
+    "scoringSub": "Reading your replies and checking them against the warning signs for this scenario."
+  },
+  "family": {
+    "title": "Family dashboard",
+    "sub": "Alerts raised by the people you look after.",
+    "none": "No alerts yet. That is good news.",
+    "call": "Call now",
+    "resolve": "Mark as handled",
+    "resolved": "Handled",
+    "riskLabel": "Risk",
+    "drills": "Recent drill scores",
+    "noDrills": "No drills completed yet.",
+    "refresh": "Refresh"
+  },
+  "common": {
+    "back": "Back",
+    "language": "हिंदी",
+    "loading": "Loading..."
+  }
+}
