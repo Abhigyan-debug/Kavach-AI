@@ -1,8 +1,11 @@
 node_modules
 .next
+.next-verify
 out
 .env
 .env.local
 *.tsbuildinfo
 next-env.d.ts
 PITCH.md
+# Browser-test output (screenshots, console logs, snapshots)
+.playwright-mcp/

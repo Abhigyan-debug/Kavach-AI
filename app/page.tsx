@@ -6,6 +6,16 @@ import { Header, GridBackdrop, MobileNav, ShieldMark } from "./components/Chrome
 import { useStreak } from "@/lib/streak";
 import { useEffect, useState } from "react";
 import { useReveal, useCountUp, useTypewriter } from "@/lib/motion";
+// m from motion/react-m, not motion/react: the barrel import dragged in
+// Motion's layout/presence engine (~45 KB measured) despite LazyMotion.
+import * as m from "motion/react-m";
+import type { Variants } from "motion/react";
+import { HudFrame } from "./components/hud/HudFrame";
+import { CircuitTrace } from "./components/hud/CircuitTrace";
+import { BootIntro, useIntroDone } from "./components/hud/BootIntro";
+import { GrowWords } from "./components/hud/GrowWords";
+import { Reticle } from "./components/hud/Reticle";
+import { Telemetry } from "./components/hud/Telemetry";
 import type { CheckResult, Verdict } from "@/lib/schema";
 import { TACTICS } from "@/lib/schema";
 import report from "@/public/benchmark.json";
@@ -32,9 +42,17 @@ const VERDICT_BAR: Record<Verdict, string> = {
 export default function Home() {
   const { lang, toggle, t } = useLang();
   const { ready, streak, boosterDue } = useStreak();
+  // The hero waits for the boot intro to land in the header before animating.
+  const introDone = useIntroDone();
+  const reveal = (delay: number) => ({
+    initial: { opacity: 0, y: 14 },
+    animate: introDone ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 },
+    transition: { duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] as const },
+  });
 
   return (
     <div className="relative min-h-dvh overflow-x-clip bg-base">
+      <BootIntro brand={t.brand} online={t.home.introOnline} skipLabel={t.home.introSkip} />
       <GridBackdrop />
 
       <div className="relative">
@@ -44,22 +62,34 @@ export default function Home() {
         {/* Hero                                                        */}
         {/* ---------------------------------------------------------- */}
         <section className="mx-auto max-w-5xl px-4 pb-16 pt-10 text-center sm:px-6 sm:pt-14">
-          <ShieldMark className="animate-float mx-auto mb-6 h-20 w-20 text-lime drop-shadow-[0_18px_35px_rgba(191,255,60,0.35)] sm:h-24 sm:w-24" />
+          <m.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={introDone ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }}
+            transition={{ type: "spring", stiffness: 260, damping: 22 }}
+          >
+            <Reticle className="mx-auto mb-7 h-40 w-40 sm:h-48 sm:w-48" />
+          </m.div>
 
-          <h1 className="animate-rise-3d font-display text-[clamp(2.75rem,10vw,5.5rem)] font-extrabold leading-[0.95] tracking-tight text-lime">
-            <span className="sheen">
-              {t.home.h1a}
-              <br />
-              {t.home.h1b} <span className="text-white">{t.home.h1c}</span>
-            </span>
-          </h1>
+          <m.div {...reveal(0.05)}>
+            <Telemetry code="SYS">{t.home.introOnline}</Telemetry>
+          </m.div>
 
-          <p
-            className="animate-rise mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
-            style={{ animationDelay: "0.12s" }}
+          <GrowWords
+            start={introDone}
+            className="mt-5 font-display text-[clamp(2.75rem,10vw,5.5rem)] font-extrabold leading-[0.98] tracking-tight text-lime"
+            segments={[
+              { text: t.home.h1a, breakAfter: true },
+              { text: t.home.h1b },
+              { text: t.home.h1c, className: "text-white" },
+            ]}
+          />
+
+          <m.p
+            className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
+            {...reveal(0.45)}
           >
             {t.home.sub}
-          </p>
+          </m.p>
 
           {/* Streak renders only after localStorage is read, so the server and
               client first render cannot disagree. */}
@@ -73,9 +103,9 @@ export default function Home() {
             <p className="animate-rise mt-4 text-base text-amber">{t.home.boosterDue}</p>
           )}
 
-          <div
-            className="animate-rise mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
-            style={{ animationDelay: "0.2s" }}
+          <m.div
+            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            {...reveal(0.6)}
           >
             <Link href="/check" className="btn-lime w-full sm:w-auto">
               {t.home.cta}
@@ -83,12 +113,12 @@ export default function Home() {
             <Link href="/drill" className="btn-outline w-full sm:w-auto">
               {t.home.ctaAlt}
             </Link>
-          </div>
+          </m.div>
 
           {/* The three objections a cautious user actually has. */}
-          <ul
-            className="animate-rise mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-sm text-muted"
-            style={{ animationDelay: "0.3s" }}
+          <m.ul
+            className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-sm text-muted"
+            {...reveal(0.75)}
           >
             {[t.home.trustPrivacy, t.home.trustOffline, t.home.trustFree].map((item) => (
               <li key={item} className="flex items-center gap-2">
@@ -96,7 +126,7 @@ export default function Home() {
                 {item}
               </li>
             ))}
-          </ul>
+          </m.ul>
         </section>
 
         <LiveDemo t={t} />
@@ -207,9 +237,7 @@ function LiveDemo({ t }: { t: Dict }) {
 
   return (
     <section ref={ref} className="mx-auto max-w-4xl px-4 pb-20 sm:px-6">
-      <p className="text-center font-display text-sm font-extrabold uppercase tracking-[0.2em] text-lime">
-        {t.home.demoLabel}
-      </p>
+      <Telemetry code="01">{t.home.demoLabel}</Telemetry>
       <p className="mt-2 text-center text-base text-muted">{t.home.demoCaption}</p>
 
       <div className="mt-7 grid items-start gap-5 md:grid-cols-2">
@@ -306,9 +334,7 @@ function Proof({ t }: { t: Dict }) {
 
   return (
     <section ref={ref} className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-      <p className="text-center font-display text-sm font-extrabold uppercase tracking-[0.2em] text-lime">
-        {t.home.proofLabel}
-      </p>
+      <Telemetry code="02">{t.home.proofLabel}</Telemetry>
 
       <div className="mt-7 grid gap-5 sm:grid-cols-3">
         <ProofTile value={`${recall}%`} label={t.home.proofScams} note={t.home.proofScamsNote} />
@@ -334,20 +360,28 @@ function Proof({ t }: { t: Dict }) {
 
 function ProofTile({ value, label, note }: { value: string; label: string; note: string }) {
   return (
-    <div className="card tilt text-center">
+    <HudFrame className="h-full">
+    <div className="card tilt h-full text-center">
       <p className="font-display text-[clamp(3rem,10vw,4.5rem)] font-extrabold leading-none tabular-nums text-lime">
         {value}
       </p>
       <p className="mt-2 text-lg font-bold text-white">{label}</p>
       <p className="mt-1 text-sm text-muted">{note}</p>
     </div>
+    </HudFrame>
   );
 }
 
 /* ------------------------------------------------------------------ */
 
+// The list staggers its children in; each card rises 14px and fades in.
+const STEP_LIST: Variants = { hidden: {}, shown: { transition: { staggerChildren: 0.09 } } };
+const STEP_ITEM: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  shown: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
+
 function HowItWorks({ t }: { t: Dict }) {
-  const { ref, shown } = useReveal<HTMLDivElement>(0.2);
   const steps = [
     { n: "1", title: t.home.how1, body: t.home.how1b },
     { n: "2", title: t.home.how2, body: t.home.how2b },
@@ -355,26 +389,38 @@ function HowItWorks({ t }: { t: Dict }) {
   ];
 
   return (
-    <section ref={ref} className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-      <p className="text-center font-display text-sm font-extrabold uppercase tracking-[0.2em] text-lime">
-        {t.home.howLabel}
-      </p>
+    <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
+      <Telemetry code="03">{t.home.howLabel}</Telemetry>
 
-      <ol className={`mt-7 grid gap-5 md:grid-cols-3 ${shown ? "stagger" : "opacity-0"}`}>
+      {/* Desktop only: the nodes line up over the 3 columns. Hidden on phones,
+          where it never intersects, so anime.js is never even downloaded there. */}
+      <CircuitTrace className="mx-auto mt-6 hidden h-auto w-full md:block" />
+
+      <m.ol
+        className="mt-7 grid gap-5 md:mt-4 md:grid-cols-3"
+        variants={STEP_LIST}
+        initial="hidden"
+        whileInView="shown"
+        viewport={{ once: true, amount: 0.2 }}
+      >
         {steps.map((s) => (
-          <li key={s.n} className="card relative">
-            {/* Oversized ghost numeral adds depth behind the text. */}
-            <span
-              className="pointer-events-none absolute right-5 top-2 font-display text-7xl font-extrabold text-lime/10"
-              aria-hidden
-            >
-              {s.n}
-            </span>
-            <h3 className="relative font-display text-xl font-extrabold text-white">{s.title}</h3>
-            <p className="relative mt-2.5 text-base leading-relaxed text-muted">{s.body}</p>
-          </li>
+          <m.li key={s.n} variants={STEP_ITEM}>
+            <HudFrame className="h-full">
+              <div className="card relative h-full">
+                {/* Oversized ghost numeral adds depth behind the text. */}
+                <span
+                  className="pointer-events-none absolute bottom-1 right-4 font-display text-7xl font-extrabold leading-none text-lime/10"
+                  aria-hidden
+                >
+                  {s.n}
+                </span>
+                <h3 className="relative font-display text-xl font-extrabold text-white">{s.title}</h3>
+                <p className="relative mt-2.5 text-base leading-relaxed text-muted">{s.body}</p>
+              </div>
+            </HudFrame>
+          </m.li>
         ))}
-      </ol>
+      </m.ol>
     </section>
   );
 }
@@ -460,7 +506,8 @@ function Tick() {
 
 function Pillar({ n, title, body, href }: { n: string; title: string; body: string; href: string }) {
   return (
-    <Link href={href} className="card tilt group block hover:border-lime hover:bg-raised">
+    <HudFrame className="h-full">
+    <Link href={href} className="card tilt group block h-full hover:border-lime hover:bg-raised">
       <span className="font-display text-sm font-extrabold tracking-[0.2em] text-lime">{n}</span>
       <h2 className="mt-3 font-display text-2xl font-extrabold text-white">{title}</h2>
       <p className="mt-2.5 text-base leading-relaxed text-muted">{body}</p>
@@ -468,5 +515,6 @@ function Pillar({ n, title, body, href }: { n: string; title: string; body: stri
         →
       </span>
     </Link>
+    </HudFrame>
   );
 }

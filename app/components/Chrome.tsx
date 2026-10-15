@@ -5,7 +5,7 @@ import { useId } from "react";
 import type { Lang } from "@/lib/schema";
 import type { Dict } from "@/lib/i18n";
 
-const SHIELD_PATH = "M32 10 51 17.5V33c0 10-8 17.4-19 20.8C21 50.4 13 43 13 33V17.5Z";
+export const SHIELD_PATH = "M32 10 51 17.5V33c0 10-8 17.4-19 20.8C21 50.4 13 43 13 33V17.5Z";
 
 /**
  * The Kavach shield. Drawn as a single lime pass through a mask: the ring is
@@ -50,7 +50,8 @@ export function ShieldMark({ className = "h-9 w-9" }: { className?: string }) {
 /** Lime mark + wordmark, matching the pill-and-grid visual language. */
 export function Logo({ label }: { label: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2" aria-label={label}>
+    // data-logo-anchor: the boot intro flies its logo to exactly this spot.
+    <Link href="/" className="flex items-center gap-2" aria-label={label} data-logo-anchor>
       <ShieldMark className="h-9 w-9 text-lime" />
       <span className="font-display text-2xl font-extrabold lowercase tracking-tight">
         {label}
@@ -91,6 +92,8 @@ export function Header({
 }) {
   return (
     <header className="sticky top-0 z-40 border-b border-edge/60 bg-base/85 backdrop-blur">
+      {/* Fills as you scroll. Pure CSS (globals.css), so it costs no JavaScript. */}
+      <div aria-hidden className="scroll-progress absolute inset-x-0 bottom-0 h-0.5 origin-left bg-lime" />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Logo label={t.brand} />
         <nav className="hidden items-center gap-1 md:flex">

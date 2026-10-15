@@ -5,19 +5,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#12082B",
-        base: "#1B0E49",
-        raised: "#261364",
-        edge: "#3A2088",
+        // Robotics palette: graphite steel structure, lime as the "power on" signal.
+        ink: "#05080D",
+        base: "#0A1018",
+        raised: "#111A26",
+        edge: "#22324A",
         lime: "#BFFF3C",
         limeDim: "#8FCC1F",
         amber: "#FFC53D",
         danger: "#FF4D6D",
-        muted: "#B9AEE8",
+        muted: "#9DB0C8",
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
+        // Labels and readouts only - never body text.
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       fontSize: {
         // Accessibility floor: body never below 18px (blueprint NFR).

@@ -6,6 +6,9 @@ import { PageShell } from "../components/Chrome";
 import { SAMPLES } from "@/lib/samples";
 import type { CheckResult, Verdict } from "@/lib/schema";
 import { useSpeechInput, useSpeech } from "@/lib/speech";
+import * as m from "motion/react-m";
+import { HudFrame } from "../components/hud/HudFrame";
+import { Telemetry } from "../components/hud/Telemetry";
 
 type CheckResponse = CheckResult & { source: "ai" | "rules"; note?: string };
 
@@ -209,12 +212,31 @@ export default function CheckPage() {
         </p>
       )}
 
+      {/* While checking: a laser sweeps the panel and the real pipeline steps
+          (mask, read, check tactics) appear in order. */}
       {busy && (
-        <div className="mt-8 card animate-pulse">
-          <div className="h-8 w-2/3 rounded-full bg-edge/60" />
-          <div className="mt-4 h-4 w-full rounded-full bg-edge/40" />
-          <div className="mt-2.5 h-4 w-5/6 rounded-full bg-edge/40" />
-        </div>
+        <HudFrame className="mt-8">
+          <div className="card relative overflow-hidden" role="status" aria-live="polite">
+            <div className="scan-line" aria-hidden />
+            <Telemetry align="start">{t.check.scanTitle}</Telemetry>
+            <ul className="mt-5 space-y-3 font-mono text-base text-muted">
+              {[t.check.scan1, t.check.scan2, t.check.scan3].map((step, i) => (
+                <m.li
+                  key={step}
+                  className="flex items-center gap-3"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.4, duration: 0.35, ease: "easeOut" }}
+                >
+                  <span className="text-lime" aria-hidden>
+                    ›
+                  </span>
+                  {step}
+                </m.li>
+              ))}
+            </ul>
+          </div>
+        </HudFrame>
       )}
 
       {result && (
@@ -224,6 +246,9 @@ export default function CheckPage() {
           aria-live="polite"
           className={`animate-rise-3d mt-8 rounded-3xl border-4 ${VERDICT_STYLE[result.verdict].ring} bg-raised/80 p-6 outline-none backdrop-blur sm:p-8`}
         >
+          <Telemetry align="start" className="mb-4">
+            {t.check.assessment}
+          </Telemetry>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p
               className={`font-display text-[clamp(2rem,8vw,3.25rem)] font-extrabold leading-none ${VERDICT_STYLE[result.verdict].text}`}

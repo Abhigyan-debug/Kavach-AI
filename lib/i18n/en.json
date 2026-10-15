@@ -62,7 +62,9 @@
     "trustOffline": "Works even if the AI is down",
     "trustFree": "Free and works on any phone",
     "demoLive": "Live result",
-    "demoFailed": "The live check could not run just now."
+    "demoFailed": "The live check could not run just now.",
+    "introOnline": "Shield online",
+    "introSkip": "Skip"
   },
   "check": {
     "title": "Is this message a scam?",
@@ -96,7 +98,12 @@
     "voiceUnsupported": "Voice is not available in this browser",
     "call1930": "Call 1930 now",
     "reportOnline": "Report at cybercrime.gov.in",
-    "actTitle": "Report it"
+    "actTitle": "Report it",
+    "scanTitle": "Scanning message",
+    "scan1": "Masking OTPs and numbers",
+    "scan2": "Reading the message",
+    "scan3": "Checking manipulation tactics",
+    "assessment": "Threat assessment"
   },
   "verdicts": {
     "SAFE": "Looks safe",
@@ -168,5 +175,47 @@
     "hint": "Tip: give her a way to check for herself, and never make her feel foolish.",
     "why": "Why this drill exists",
     "whyBody": "Research on role-based fraud training found that persuading someone else out of a scam improves your own ability to spot one as much as being the target does."
+  },
+  "bench": {
+    "chip": "Tested, not just claimed",
+    "title": "How accurate is Kavach?",
+    "sub": "We gave Kavach {total} messages — scams, slightly risky ones and normal ones — and checked every single answer.",
+    "caughtLabel": "Caught every scam",
+    "caughtNote": "All {n} scam messages got a warning",
+    "calmLabel": "Never scared you for nothing",
+    "calmNote": "None of the {n} normal messages were called a scam",
+    "rightLabel": "Exactly right",
+    "rightNote": "{correct} out of {total} answers matched ours",
+    "whyTitle": "Why not 100%?",
+    "whyBody": "{n} messages were only slightly risky, but Kavach warned more strongly than we expected — it said \"This is a scam\" instead of \"Be careful\". That is the safe kind of mistake: being too careful is better than being too relaxed. It never told anyone that a real scam was safe.",
+    "tableTitle": "Our answer vs Kavach's answer",
+    "ourAnswer": "Our answer",
+    "kavachSaid": "Kavach said",
+    "tableHint": "Green means Kavach agreed with us. Amber means it disagreed.",
+    "langTitle": "Works in both languages",
+    "langRow": "{lang}: {correct} of {total} right",
+    "english": "English",
+    "hindi": "Hindi",
+    "speedTitle": "How fast",
+    "speedBody": "Most answers arrive in about {typ} seconds. 9 out of 10 come within {slow} seconds.",
+    "backupAllRight": "If the AI is busy, a simpler backup checker answers instead. In this test it answered {n} of the {total} messages — and was right every time.",
+    "backupSome": "If the AI is busy, a simpler backup checker answers instead. In this test it answered {n} of the {total} messages, and was right {ok} times.",
+    "everyTitle": "Every message we tested",
+    "colLang": "Language",
+    "colOurs": "Our answer",
+    "colKavach": "Kavach's answer",
+    "colRisk": "Risk",
+    "colTime": "Time",
+    "seconds": "{s} s",
+    "limitsTitle": "What this test does not prove",
+    "limit1Title": "It is a small test.",
+    "limit1": "{total} messages, written by us. Enough to show that Kavach works — not enough to promise it will always be right.",
+    "limit2Title": "\"Be careful\" or \"scam\" is sometimes a matter of opinion.",
+    "limit2": "The {n} messages Kavach got \"wrong\" are ones where people might disagree too.",
+    "limit3Title": "Other studies don't apply here.",
+    "limit3": "Most published tests used English emails. In India, scams mostly arrive by SMS and WhatsApp, in Hindi and English — so we tested that ourselves.",
+    "devNote": "For developers: run {cmd} to repeat this test.",
+    "lastTested": "Last tested on {date}",
+    "cta": "Try it yourself"
   }
 }

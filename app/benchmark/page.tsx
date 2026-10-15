@@ -3,82 +3,95 @@
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import { PageShell } from "../components/Chrome";
+import { Telemetry } from "../components/hud/Telemetry";
+import type { Verdict } from "@/lib/schema";
 import report from "@/public/benchmark.json";
 
 type Row = {
   id: number;
   lang: string;
-  expected: string;
-  got: string;
+  expected: Verdict;
+  got: Verdict;
   risk: number;
   source: string;
   ms: number;
   correct: boolean;
 };
 
-const VERDICTS = ["SCAM", "SUSPICIOUS", "SAFE"] as const;
+const VERDICTS: Verdict[] = ["SCAM", "SUSPICIOUS", "SAFE"];
+
+/** Replace {name} placeholders in a translated sentence. */
+const fill = (text: string, vars: Record<string, string | number>) =>
+  text.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? `{${k}}`));
+
+const seconds = (ms: number) => (ms / 1000).toFixed(1);
 
 export default function BenchmarkPage() {
   const { lang, toggle, t } = useLang();
+  const b = t.bench;
   const rows = report.results as Row[];
   const matrix = report.matrix as Record<string, Record<string, number>>;
 
+  // Every number in the text comes from the data, so the wording stays true
+  // if the benchmark is re-run.
+  const rowTotal = (v: Verdict) => VERDICTS.reduce((sum, g) => sum + (matrix[v]?.[g] ?? 0), 0);
+  const total = report.setSize;
+  const misses = total - report.correct;
+  const backup = rows.filter((r) => r.source === "rules");
+  const backupRight = backup.filter((r) => r.correct).length;
+  const langName = (code: string) => (code === "hi" ? b.hindi : b.english);
+  const lastTested = new Date(report.generatedAt).toLocaleDateString(
+    lang === "hi" ? "hi-IN" : "en-IN",
+    // Fixed zone: the server (UTC) and the browser (IST) must print the same date.
+    { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" },
+  );
+
   return (
     <PageShell t={t} lang={lang} onToggle={toggle}>
-      <p className="chip">Measured, not claimed</p>
+      <Telemetry align="start">{b.chip}</Telemetry>
       <h1 className="mt-4 font-display text-[clamp(2rem,7vw,3rem)] font-extrabold leading-tight text-white">
-        How accurate is Kavach?
+        {b.title}
       </h1>
-      <p className="mt-3 text-lg text-muted">
-        Every labelled message in our test set, run through the live{" "}
-        <code className="text-lime">/api/check</code> endpoint — the same pipeline a real user
-        gets, including redaction and the fallback.
-      </p>
+      <p className="mt-3 text-lg text-muted">{fill(b.sub, { total })}</p>
 
-      {/* Headline numbers. Recall is first because it is the one that matters. */}
+      {/* The safety numbers come first: catching scams matters most. */}
       <div className="stagger mt-8 grid gap-4 sm:grid-cols-3">
         <Stat
           value={`${report.scamRecall}%`}
-          label="of scams flagged"
-          note="never rated SAFE"
+          label={b.caughtLabel}
+          note={fill(b.caughtNote, { n: rowTotal("SCAM") })}
           tone="lime"
         />
         <Stat
           value={String(report.falseAlarms.length)}
-          label="false alarms"
-          note="safe messages called SCAM"
+          label={b.calmLabel}
+          note={fill(b.calmNote, { n: rowTotal("SAFE") })}
           tone="lime"
         />
         <Stat
           value={`${report.accuracy}%`}
-          label="exact-label accuracy"
-          note={`${report.correct}/${report.setSize} messages`}
+          label={b.rightLabel}
+          note={fill(b.rightNote, { correct: report.correct, total })}
           tone="white"
         />
       </div>
 
-      {/* The honest reading of the number. */}
       <div className="mt-6 rounded-2xl border-2 border-lime/40 bg-lime/5 p-5">
-        <h2 className="font-display text-lg font-extrabold text-lime">What the 80% actually means</h2>
-        <p className="mt-2 text-base leading-relaxed text-white">
-          Not all mistakes cost the same. Calling a scam <strong>safe</strong> can cost someone
-          their savings; calling an ambiguous message <strong>scam</strong> costs them a moment of
-          caution. Every error we made was the second kind — Kavach rated four borderline messages
-          as SCAM when we had labelled them SUSPICIOUS. It never missed a scam, and never cried
-          wolf on a genuine message.
-        </p>
+        <h2 className="font-display text-lg font-extrabold text-lime">{b.whyTitle}</h2>
+        <p className="mt-2 text-base leading-relaxed text-white">{fill(b.whyBody, { n: misses })}</p>
       </div>
 
-      {/* Confusion matrix */}
-      <h2 className="mt-10 font-display text-xl font-extrabold text-white">Where it disagreed</h2>
+      {/* Agreement table, with verdicts in the same words the Check page uses. */}
+      <h2 className="mt-10 font-display text-xl font-extrabold text-white">{b.tableTitle}</h2>
+      <p className="mt-2 text-base text-muted">{b.tableHint}</p>
       <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[420px] border-collapse text-left">
+        <table className="w-full min-w-[460px] border-collapse text-left">
           <thead>
-            <tr className="text-sm uppercase tracking-wide text-muted">
-              <th className="py-2 pr-4 font-bold">We labelled</th>
+            <tr className="text-sm text-muted">
+              <th className="py-2 pr-4 font-bold">{b.ourAnswer} ↓</th>
               {VERDICTS.map((v) => (
                 <th key={v} className="py-2 pr-4 font-bold">
-                  Said {v.toLowerCase()}
+                  {b.kavachSaid}: {t.verdicts[v]}
                 </th>
               ))}
             </tr>
@@ -86,19 +99,16 @@ export default function BenchmarkPage() {
           <tbody>
             {VERDICTS.map((expected) => (
               <tr key={expected} className="border-t border-edge">
-                <td className="py-3 pr-4 font-display text-lg font-extrabold text-white">
-                  {expected}
-                </td>
+                <td className="py-3 pr-4 text-base font-bold text-white">{t.verdicts[expected]}</td>
                 {VERDICTS.map((got) => {
                   const n = matrix[expected]?.[got] ?? 0;
-                  const hit = expected === got;
                   return (
                     <td key={got} className="py-3 pr-4">
                       <span
                         className={
                           n === 0
                             ? "text-muted/50"
-                            : hit
+                            : expected === got
                               ? "font-display text-xl font-extrabold text-lime"
                               : "font-display text-xl font-extrabold text-amber"
                         }
@@ -114,104 +124,90 @@ export default function BenchmarkPage() {
         </table>
       </div>
 
-      {/* Secondary stats */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <div className="card">
-          <h3 className="text-base font-bold uppercase tracking-wide text-muted">By language</h3>
-          <p className="mt-3 text-lg text-white">
-            English{" "}
-            <span className="font-display font-extrabold text-lime">
-              {report.byLang.en.correct}/{report.byLang.en.total}
-            </span>
-          </p>
-          <p className="mt-1 text-lg text-white">
-            Hindi{" "}
-            <span className="font-display font-extrabold text-lime">
-              {report.byLang.hi.correct}/{report.byLang.hi.total}
-            </span>
-          </p>
+          <h3 className="font-display text-lg font-extrabold text-white">{b.langTitle}</h3>
+          {(["en", "hi"] as const).map((code) => (
+            <p key={code} className="mt-2 text-lg text-white">
+              {fill(b.langRow, {
+                lang: langName(code),
+                correct: report.byLang[code].correct,
+                total: report.byLang[code].total,
+              })}
+            </p>
+          ))}
         </div>
         <div className="card">
-          <h3 className="text-base font-bold uppercase tracking-wide text-muted">Response time</h3>
-          <p className="mt-3 text-lg text-white">
-            Median{" "}
-            <span className="font-display font-extrabold text-lime">{report.latency.p50}ms</span>
+          <h3 className="font-display text-lg font-extrabold text-white">{b.speedTitle}</h3>
+          <p className="mt-2 text-lg text-white">
+            {fill(b.speedBody, { typ: seconds(report.latency.p50), slow: seconds(report.latency.p90) })}
           </p>
-          <p className="mt-1 text-lg text-white">
-            90th percentile{" "}
-            <span className="font-display font-extrabold text-lime">{report.latency.p90}ms</span>
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            {report.aiCoverage}% answered by the model; the rest fell back to offline rules and
-            still returned a correct verdict.
-          </p>
+          {backup.length > 0 && (
+            <p className="mt-3 text-base text-muted">
+              {fill(backupRight === backup.length ? b.backupAllRight : b.backupSome, {
+                n: backup.length,
+                total,
+                ok: backupRight,
+              })}
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Per-message detail */}
-      <h2 className="mt-10 font-display text-xl font-extrabold text-white">Every message</h2>
+      <h2 className="mt-10 font-display text-xl font-extrabold text-white">{b.everyTitle}</h2>
       <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[520px] border-collapse text-left text-base">
+        <table className="w-full min-w-[540px] border-collapse text-left text-base">
           <thead>
-            <tr className="text-sm uppercase tracking-wide text-muted">
+            <tr className="text-sm text-muted">
               <th className="py-2 pr-3 font-bold">#</th>
-              <th className="py-2 pr-3 font-bold">Lang</th>
-              <th className="py-2 pr-3 font-bold">Labelled</th>
-              <th className="py-2 pr-3 font-bold">Kavach said</th>
-              <th className="py-2 pr-3 font-bold">Risk</th>
-              <th className="py-2 pr-3 font-bold">Time</th>
+              <th className="py-2 pr-3 font-bold">{b.colLang}</th>
+              <th className="py-2 pr-3 font-bold">{b.colOurs}</th>
+              <th className="py-2 pr-3 font-bold">{b.colKavach}</th>
+              <th className="py-2 pr-3 font-bold">{b.colRisk}</th>
+              <th className="py-2 pr-3 font-bold">{b.colTime}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-edge">
                 <td className="py-2.5 pr-3 text-muted">{r.id}</td>
-                <td className="py-2.5 pr-3 uppercase text-muted">{r.lang}</td>
-                <td className="py-2.5 pr-3 text-white">{r.expected}</td>
+                <td className="py-2.5 pr-3 text-muted">{langName(r.lang)}</td>
+                <td className="py-2.5 pr-3 text-white">{t.verdicts[r.expected]}</td>
                 <td className={`py-2.5 pr-3 font-bold ${r.correct ? "text-lime" : "text-amber"}`}>
-                  {r.got}
-                  {!r.correct && " ●"}
+                  {t.verdicts[r.got]}
                 </td>
-                <td className="py-2.5 pr-3 text-muted">{r.risk}</td>
-                <td className="py-2.5 pr-3 text-muted">{r.ms}ms</td>
+                <td className="py-2.5 pr-3 text-muted">{r.risk}/100</td>
+                <td className="py-2.5 pr-3 text-muted">{fill(b.seconds, { s: seconds(r.ms) })}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Caveats - judges reward honesty, and overclaiming is easy to catch */}
-      <h2 className="mt-10 font-display text-xl font-extrabold text-white">
-        What this number does not prove
-      </h2>
-      <ul className="mt-4 space-y-2.5 text-base leading-relaxed text-muted">
+      {/* Stated plainly: overclaiming is easy to catch, and honesty earns trust. */}
+      <h2 className="mt-10 font-display text-xl font-extrabold text-white">{b.limitsTitle}</h2>
+      <ul className="mt-4 space-y-3 text-base leading-relaxed text-muted">
         <li>
-          <strong className="text-white">The set is small.</strong> {report.setSize} messages we
-          wrote ourselves. It is enough to catch a broken pipeline, not enough to claim
-          production accuracy.
+          <strong className="text-white">{b.limit1Title}</strong> {fill(b.limit1, { total })}
         </li>
         <li>
-          <strong className="text-white">SUSPICIOUS is a judgement call.</strong> Our four
-          &ldquo;misses&rdquo; are messages reasonable people would label differently.
+          <strong className="text-white">{b.limit2Title}</strong> {fill(b.limit2, { n: misses })}
         </li>
         <li>
-          <strong className="text-white">Published LLM phishing results do not transfer.</strong>{" "}
-          Those are measured on English email corpora. This is Hindi and English SMS and
-          WhatsApp, which is why we measured our own rather than quoting theirs.
-        </li>
-        <li>
-          <strong className="text-white">Reproduce it:</strong>{" "}
-          <code className="text-lime">npm run benchmark</code> against your own key.
+          <strong className="text-white">{b.limit3Title}</strong> {b.limit3}
         </li>
       </ul>
 
       <p className="mt-8 text-sm text-muted">
-        Generated {new Date(report.generatedAt).toLocaleString("en-IN")} · set{" "}
-        <code>tests/scam-set.json</code>
+        {fill(b.lastTested, { date: lastTested })}
+        <br />
+        {b.devNote.split("{cmd}")[0]}
+        <code className="text-lime">npm run benchmark</code>
+        {b.devNote.split("{cmd}")[1]}
       </p>
 
       <Link href="/check" className="btn-lime mt-8 w-full">
-        Try it yourself
+        {b.cta}
       </Link>
     </PageShell>
   );

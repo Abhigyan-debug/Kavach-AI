@@ -41,6 +41,12 @@ export function useLang() {
 
   const toggle = useCallback(() => setLang(lang === "en" ? "hi" : "en"), [lang, setLang]);
 
+  // Screen readers choose a voice from <html lang>, and CSS uses it to adjust
+  // Hindi typography. It is hard-coded "en" in layout.tsx, so update it here.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   return { lang, setLang, toggle, t: DICTS[lang] };
 }
 

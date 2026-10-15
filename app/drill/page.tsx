@@ -5,6 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { PageShell } from "../components/Chrome";
 import { SCENARIOS, type DrillMessage, type DrillScore, type Scenario } from "@/lib/schema";
 import { recordPractice } from "@/lib/streak";
+import { HudFrame } from "../components/hud/HudFrame";
 
 type Phase = "pick" | "chat" | "scoring" | "score";
 
@@ -294,6 +295,7 @@ export default function DrillPage() {
 
       {phase === "score" && score && (
         <section className="animate-rise-3d mt-8">
+          <HudFrame>
           <div className="card border-lime">
             <h2 className="font-display text-xl font-extrabold text-white">{t.drill.scoreTitle}</h2>
             <p className="mt-3 font-display text-[clamp(3.5rem,16vw,6rem)] font-extrabold leading-none text-lime">
@@ -343,6 +345,7 @@ export default function DrillPage() {
               <p className="mt-2 text-lg leading-relaxed text-white">{score.lesson}</p>
             </div>
           </div>
+          </HudFrame>
 
           <button type="button" onClick={reset} className="btn-lime mt-5 w-full">
             {t.drill.again}

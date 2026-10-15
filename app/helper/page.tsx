@@ -5,6 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { PageShell } from "../components/Chrome";
 import { HELPER_MAX_TURNS, type DrillMessage } from "@/lib/schema";
 import { recordPractice } from "@/lib/streak";
+import { HudFrame } from "../components/hud/HudFrame";
 
 type Phase = "intro" | "chat" | "done";
 
@@ -189,6 +190,7 @@ export default function HelperPage() {
 
       {phase === "done" && (
         <section className="mt-8 animate-rise">
+          <HudFrame>
           <div className={`card ${saved ? "border-lime" : "border-amber"}`}>
             <h2
               className={`font-display text-[clamp(1.75rem,6vw,2.5rem)] font-extrabold leading-tight ${
@@ -219,6 +221,7 @@ export default function HelperPage() {
               </div>
             )}
           </div>
+          </HudFrame>
 
           <button type="button" onClick={start} className="btn-lime mt-5 w-full">
             {t.helper.again}

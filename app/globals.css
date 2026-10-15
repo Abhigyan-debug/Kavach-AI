@@ -7,22 +7,22 @@
 }
 
 body {
-  background-color: #1b0e49;
+  background-color: #0a1018;
   color: #ffffff;
 }
 
-/* The tekki-style perspective grid: two layers of hairlines over the indigo ground. */
+/* Blueprint grid: two layers of steel hairlines over the graphite ground. */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(167, 139, 250, 0.09) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(167, 139, 250, 0.09) 1px, transparent 1px);
+    linear-gradient(rgba(120, 170, 220, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 170, 220, 0.075) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
 .grid-bg-fine {
   background-image:
-    linear-gradient(rgba(167, 139, 250, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(167, 139, 250, 0.055) 1px, transparent 1px);
+    linear-gradient(rgba(120, 170, 220, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 170, 220, 0.045) 1px, transparent 1px);
   background-size: 16px 16px;
 }
 
@@ -160,37 +160,6 @@ body {
   }
 }
 
-@keyframes sheen {
-  from {
-    background-position: -220% 0;
-  }
-  to {
-    background-position: 220% 0;
-  }
-}
-
-@keyframes float-soft {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -7px, 0);
-  }
-}
-
-@keyframes pulse-ring {
-  0% {
-    box-shadow: 0 0 0 0 rgba(191, 255, 60, 0.35);
-  }
-  70% {
-    box-shadow: 0 0 0 16px rgba(191, 255, 60, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(191, 255, 60, 0);
-  }
-}
-
 @keyframes dot-bounce {
   0%,
   80%,
@@ -210,10 +179,6 @@ body {
 
 .animate-rise-3d {
   animation: rise-in-3d 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.animate-float {
-  animation: float-soft 6s ease-in-out infinite;
 }
 
 /* Stagger children so a grid assembles instead of popping in at once. */
@@ -250,18 +215,89 @@ body {
   animation: caret-blink 1s steps(1) infinite;
 }
 
-/* Lime sweep across the hero headline. */
-.sheen {
-  background-image: linear-gradient(
-    100deg,
-    transparent 38%,
-    rgba(255, 255, 255, 0.65) 50%,
-    transparent 62%
+/* ------------------------------------------------------------------ */
+/* Robotics motion: reticle, radar sweep, scan line                    */
+/* All transform-only (compositor), all stopped by reduced motion.     */
+/* ------------------------------------------------------------------ */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-slow {
+  animation: spin 28s linear infinite;
+}
+
+.spin-rev {
+  animation: spin 40s linear infinite reverse;
+}
+
+.radar-sweep {
+  background: conic-gradient(from 0deg, rgba(191, 255, 60, 0.32), rgba(191, 255, 60, 0) 70deg);
+  animation: spin 3.6s linear infinite;
+}
+
+@keyframes scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* A laser line sweeping down its container while a message is analysed. */
+.scan-line {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 46%,
+    rgba(191, 255, 60, 0.22) 49%,
+    rgba(191, 255, 60, 0.7) 50%,
+    transparent 52%
   );
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: sheen 5.5s ease-in-out 1.2s infinite;
+  animation: scan 1.8s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------------ */
+/* Boot intro                                                          */
+/*                                                                     */
+/* A tiny inline script in layout.tsx sets data-intro="on" on <html>    */
+/* before first paint, so the overlay is visible from the very first    */
+/* frame (no flash of the page underneath). The header logo hides while */
+/* the intro logo flies into its place.                                 */
+/* ------------------------------------------------------------------ */
+
+.boot-overlay {
+  display: none;
+}
+
+[data-intro="on"] .boot-overlay {
+  display: flex;
+  /* Failsafe: if JavaScript never runs, the overlay hides itself after 5s
+     instead of trapping the user behind it. */
+  animation: boot-failsafe 0.01s linear 5s forwards;
+}
+
+[data-intro="on"] [data-logo-anchor] {
+  opacity: 0;
+  animation: logo-failsafe 0.01s linear 5s forwards;
+}
+
+@keyframes boot-failsafe {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes logo-failsafe {
+  to {
+    opacity: 1;
+  }
 }
 
 /* Respect users who ask for less motion. */
@@ -270,6 +306,41 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* Without this, infinite animations would loop at 0.01ms per cycle and
+       jitter wildly - the opposite of what these users asked for. */
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll progress bar - CSS scroll-driven animation, zero JavaScript.  */
+/* A JS version put Motion's runtime on every page (~20 KB each).       */
+/* Unsupported browsers simply don't show the bar (it stays scaleX 0).  */
+/* Placed after the reduced-motion block so its duration isn't forced. */
+/* ------------------------------------------------------------------ */
+
+.scroll-progress {
+  transform: scaleX(0);
+}
+
+@keyframes progress-grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: progress-grow linear both !important;
+    animation-duration: auto !important;
+    animation-timeline: scroll(root) !important;
+  }
+}
+
+/* Devanagari letters connect along a continuous top line (shirorekha). The
+   wide letter-spacing that gives English labels their robotic look pulls Hindi
+   letters apart, so Hindi labels keep normal spacing. */
+html[lang="hi"] .telemetry {
+  letter-spacing: normal;
 }

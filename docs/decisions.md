@@ -57,6 +57,67 @@ had to be checked, not assumed.
 **Considered:** jumping to Next 15/16 — a major upgrade with breaking changes, out of scope for a
 security fix. `eslint-config-next` was bumped to the same version to stay matched.
 
+## Motion and anime.js, each with its own job (15 Oct 2026)
+**Why:** the team asked for both. Two animation libraries are only sensible if they never overlap,
+so the rule is **one element, one library**: Motion for anything tied to React state (entrances,
+gestures, exit animations); anime.js for SVG line drawing and timelines. Both on one element would
+fight over `transform` and stutter.
+
+## Measure on one section before applying everywhere (15 Oct 2026)
+**Why:** if every page were redesigned first, a slowdown would be buried under many changes.
+Measuring the first section caught a **+47 kB** regression immediately.
+
+## Import `m` from `motion/react-m`, never from `motion/react` (15 Oct 2026)
+**Why:** measured. Importing `m` from the `motion/react` barrel pulled in Motion's layout and
+AnimatePresence engine (~45 KB) even inside `LazyMotion`, because the bundler cannot tree-shake
+that entry point. Switching the import took the landing page from **168 kB to 139 kB**.
+`LazyMotion` is set to `strict`, so using the heavy `motion` component inside it throws.
+
+## Circuit trace is desktop-only and loads anime.js on demand (15 Oct 2026)
+**Why:** its three nodes line up over a three-column grid, which only exists on wide screens. On
+phones the SVG is `display:none`, so it never intersects the viewport and **anime.js is never
+downloaded** — verified. On desktop, `import("animejs")` runs only when the trace scrolls into view.
+
+## Robotics palette: graphite steel, lime kept (15 Oct 2026)
+**Why:** purple-indigo read as "web3" (the original reference was a web3 site). Graphite steel reads
+as machinery; lime stays as the single "power on" signal and matches the logo. Every text/background
+pair was checked against WCAG AA (all pass; muted text on cards is 7.9:1).
+
+## Boot intro: once per session, landing page only, skippable (15 Oct 2026)
+**Why:** the team asked for an animated logo that moves into the header. The primary user may be
+anxious about a scam, so the intro is ~2s, skippable (tap, Skip, Escape), shown once per session,
+landing page only, and never with reduced motion.
+**How it avoids a flash:** a pre-paint inline script sets `data-intro="on"` on `<html>` before React
+loads. **Failsafe:** CSS hides the overlay after 5s even if JavaScript never runs.
+**Precision:** the intro logo is laid out at exactly 2.5x the header logo, so scaling by the
+measured ratio lands it within 1px (verified at 1280px and 390px).
+
+## Scroll-progress bar in CSS, not Motion (15 Oct 2026)
+**Why:** measured. A Motion version in the header put Motion's runtime on **every** page —
+`/family` and `/benchmark` grew ~20 kB each for a 2px bar. CSS scroll-driven animations
+(`animation-timeline: scroll()`) do it with zero JavaScript; unsupported browsers just omit it.
+
+## Split Hindi text with Intl.Segmenter (15 Oct 2026)
+**Why:** `Array.from("सुरक्षित")` yields 8 pieces with floating vowel signs; the segmenter yields the
+4 characters a reader sees. Letter-by-letter animation needs the latter.
+
+## Accuracy page written for ordinary people, in both languages (15 Oct 2026)
+**Why:** the page read like a research paper ("exact-label accuracy", "corpora") and ignored the
+Hindi toggle. It is now plain language in English and Hindi, with every number taken from
+`public/benchmark.json` so the sentences stay true if the test is re-run. The honest caveats stay,
+reworded; the developer command is a small footnote.
+
+## Hindi labels keep normal letter-spacing (15 Oct 2026)
+**Why:** Devanagari letters join along a continuous top line (shirorekha). The wide spacing that
+gives English labels their robotic look tears Hindi words apart. `html[lang="hi"] .telemetry`
+resets it, which required `<html lang>` to actually follow the toggle.
+
+## Configurable `distDir` for verification builds (15 Oct 2026)
+**Why:** a verification build deleted `.next` while the developer's `next dev` was using it,
+crashing the dev server. `next.config.mjs` now reads `NEXT_DIST_DIR`, so verification builds go to
+`.next-verify`. Unset on Vercel, so production still uses `.next`. `tsconfig.json` permanently lists
+`.next-verify/types`, because Next rewrites the whole file whenever that entry is missing.
+
 ## `--legacy-peer-deps` for one install (15 Oct 2026)
 **Why:** `better-auth` lists SvelteKit as an optional peer; SvelteKit 3 requires Vite 8, Vitest 2
 uses Vite 5. Kavach does not use SvelteKit. **Verified** that plain `npm install` and `npm ci`

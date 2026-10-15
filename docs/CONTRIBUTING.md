@@ -29,4 +29,11 @@ If the database times out with `ETIMEDOUT`, your network may block port 5432. Ch
 6. **Accessibility is not optional:** body text ≥ 18px, tap targets ≥ 56px, no flashing faster
    than 3 times per second, and every animation respects `prefers-reduced-motion`.
 7. **Never invent results.** Docs record only what was actually run, with the date.
-8. **Update `docs/`** — PROGRESS, decisions, testing and the learning log — with each milestone.
+8. **Never run `npm run build` while `npm run dev` is running.** Both use `.next`; the build
+   deletes it and the dev server crashes with `Cannot find module ... middleware-manifest.json`.
+   To verify a build while dev runs, build into a separate folder:
+   ```bash
+   NEXT_DIST_DIR=.next-verify npm run build      # bash
+   $env:NEXT_DIST_DIR=".next-verify"; npm run build   # PowerShell
+   ```
+9. **Update `docs/`** — PROGRESS, decisions, testing and the learning log — with each milestone.

@@ -7,6 +7,8 @@ Browser (phone or desktop, installable PWA)
    │
    │  Pages: / · /check · /drill · /helper · /family · /benchmark
    │  lib/auth-client.ts  ── browser auth helpers (no secrets)
+   │  app/components/MotionProvider.tsx ── LazyMotion (small `m` components) + reduced-motion
+   │  app/components/hud/  ── HudFrame (Motion), CircuitTrace (anime.js, loaded on demand)
    ▼
 Next.js 14 App Router on Vercel (serverless)
    │

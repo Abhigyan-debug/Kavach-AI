@@ -10,6 +10,15 @@ Last updated: **15 October 2026**
 - **Docs moved into `docs/`** (15 Oct 2026). README links rewritten to `../` and checked.
 - **Security patch: Next.js 14.2.15 → 14.2.35** (15 Oct 2026). Fixes CVE-2025-55184, a
   high-severity denial of service affecting App Router apps. Verified locally; **not yet deployed**.
+- **Milestone 4: Motion + anime.js foundation** (15 Oct 2026). Installed and proven on the landing
+  page's "How it works" section: circuit traces (anime.js) and HUD corner brackets (Motion).
+  Landing page JavaScript **121 → 139 kB (+18 kB, budget +25 kB)**; measured in a real browser.
+- **Milestone 5: robotics theme** (15 Oct 2026). Graphite-steel palette with lime as the "power on"
+  signal; boot intro (logo draws, letters grow, logo flies into the header); radar reticle hero;
+  growing headline words; telemetry labels; CSS scroll-progress bar; laser-scan state on Check;
+  HUD frames on cards. Every page within the +25 kB budget; verified in a real browser.
+- **Accuracy page in plain language, English and Hindi** (15 Oct 2026). Previously English-only and
+  full of jargon. `<html lang>` now follows the language toggle (it was always `en`).
 
 ## In progress — Milestone 1: auth backbone
 
@@ -42,10 +51,12 @@ Desktop for a throwaway local Postgres, or run the SQL in Neon's web SQL editor 
 - **M2.5** — transactional email (Resend) for verification and password reset
 - **M3** — guardian family link; alerts visible only to their guardian (**closes a privacy hole**:
   today `GET /api/alert` returns every alert to anyone)
-- **M4** — Motion + anime.js foundation with a measured bundle budget
-- **M5** — evolved cyber/HUD theme, page by page
 
 ## Known issues
 
+- The PWA icons (`public/icon*.png`, `apple-touch-icon.png`) still have the old purple plaque.
+  Regenerating them needs an SVG renderer; not yet done.
+- `next/font` downloads Google Fonts at build time; one build failed on a bad font response and
+  passed on retry. If it recurs, self-host the fonts with `next/font/local`.
 - `better-auth` needed `--legacy-peer-deps` once: it lists SvelteKit as an *optional* peer, whose
   Vite 8 requirement clashes with Vitest's Vite 5. Plain `npm install` and `npm ci` both pass after.
