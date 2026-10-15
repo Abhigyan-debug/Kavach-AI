@@ -34,7 +34,7 @@ export type DrillRow = {
 
 let pool: Pool | null = null;
 
-function getPool(): Pool | null {
+export function getPool(): Pool | null {
   const url = process.env.DATABASE_URL;
   if (!url) return null;
   if (!pool) {
